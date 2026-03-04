@@ -1,0 +1,208 @@
+<div class="bg-light p-4">
+  <div class="container-fluid">
+    <h4 class="mb-4 fw-bold">Student Management</h4>
+
+    <div class="row g-4">
+      <!-- Table col-8 -->
+      <div class="col-8">
+        <div class="card bg-warning">
+          <div class="card-header fw-bold">Student List</div>
+          <div class="card-body p-0">
+            <table class="table table-bordered mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Mobile</th>
+                  <th>Email</th>
+                  <th>Division</th>
+                  <th>District</th>
+                  <th>Address</th>
+                  <th class="text-center">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (Student of studentList; track $index) {
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ Student.studentName }}</td>
+                    <td>{{ Student.mobileNo }}</td>
+                    <td>{{ Student.email }}</td>
+                    <td>{{ Student.divisionName }}</td>
+                    <td>{{ Student.districtName  }}</td>
+                    <td>{{ Student.address }}</td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-primary me-1" (click)="editStudent(Student)">
+                        Edit
+                      </button>
+
+                      <button
+                        class="btn btn-sm btn-danger"
+                        (click)="openDeleteModal(Student.studentId)"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form col-4 -->
+      <div class="col-4">
+        <div class="card bg-warning">
+          <div class="card-header fw-bold">Student Form</div>
+          <div class="card-body">
+            <!-- FORM START -->
+            <form #s="ngForm" (ngSubmit)="saveStudent()" novalidate>
+              <!-- Student Name -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Student Name</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="studentObj.studentName"
+                  name="studentName"
+                  required
+                  maxlength="50"
+                  #studentName="ngModel"
+                />
+                <!-- <div class="text-danger" *ngIf="studentName.invalid && s.submitted">
+                  Name is required (max 50 characters)
+                </div> -->
+              </div>
+
+              <!-- Mobile -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Mobile No</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="studentObj.mobileNo"
+                  name="mobileNo"
+                  required
+                  pattern="^[0-9]{11}$"
+                  #mobileNo="ngModel"
+                />
+                <!-- <div class="text-danger" *ngIf="mobileNo.invalid && s.submitted">
+                  Enter valid 11 digit mobile number
+                </div> -->
+              </div>
+
+              <!-- Email -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <input
+                  type="email"
+                  class="form-control"
+                  [(ngModel)]="studentObj.email"
+                  name="email"
+                  required
+                  email
+                  #email="ngModel"
+                />
+                <!-- <div class="text-danger" *ngIf="email.invalid && s.submitted">
+                  Enter valid email address
+                </div> -->
+              </div>
+
+              <!-- Division -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Division</label>
+                <select
+                  class="form-select"
+                  [(ngModel)]="studentObj.divisionId"
+                  name="divisionId"
+                  required
+                  (change)="onDivisionChange()"
+                  #division="ngModel"
+                >
+                  <option [ngValue]="0">-- Select Division --</option>
+                  <option *ngFor="let d of divisions" [ngValue]="d.divisionID">
+                    {{ d.divisionName }}
+                  </option>
+                </select>
+
+                <!-- <div class="text-danger" *ngIf="division.invalid && s.submitted">
+                  Division is required
+                </div> -->
+              </div>
+
+              <!-- District -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">District</label>
+                <select
+                aria-placeholder="-- Select District --"
+                  class="form-select"
+                  [(ngModel)]="studentObj.districtId"
+                  name="districtId"
+                  required
+                  #district="ngModel"
+                >
+                  <option [ngValue]="0">-- Select District --</option>
+                  <option  *ngFor="let d of districts" [ngValue]="d.districtID">
+                    {{ d.districtName }}
+                  </option>
+                </select>
+
+                <!-- <div class="text-danger" *ngIf="district.invalid && s.submitted">
+                  District is required
+                </div> -->
+              </div>
+
+              <!-- Pincode -->
+              <!-- <div class="mb-3">
+                <label class="form-label fw-semibold">Pincode</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="studentObj.pincode"
+                  name="pincode"
+                  required
+                  pattern="^[0-9]{4,6}$"
+                  #pincode="ngModel"
+                />
+                <div class="text-danger" *ngIf="pincode.invalid && s.submitted">
+                  Enter valid pincode
+                </div> -->
+              <!-- </div> -->
+
+              <!-- Address (Textarea) -->
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Address</label>
+                <textarea
+                  class="form-control"
+                  rows="3"
+                  [(ngModel)]="studentObj.address"
+                  name="address"
+                  required
+                  #address="ngModel"
+                ></textarea>
+
+                <!-- <div class="text-danger" *ngIf="address.invalid && s.submitted">
+                  Address is required
+                </div> -->
+              </div>
+
+              <!-- Buttons -->
+              <div class="d-flex gap-2">
+                <button class="btn btn-dark w-50" type="submit">Save</button>
+                <button class="btn btn-outline-dark w-50" type="button" (click)="resetForm()">
+                  Reset
+                </button>
+              </div>
+            </form>
+            <!-- FORM END -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-modal (confirmDelete)="deleteStudent(selectedStudentId)"> </app-modal>
